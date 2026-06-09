@@ -37,6 +37,9 @@ export interface POI {
   name: string;
   category: POICategory;
   imagePos: ImageRelPos;
+  // Real GPS coordinates derived from satellite image analysis.
+  // Accuracy ≈ 50–150 m; improves after on-site calibration.
+  gps: GpsCoords;
   description?: string;
 }
 

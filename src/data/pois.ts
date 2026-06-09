@@ -1,22 +1,29 @@
 import { POI } from '../types';
 
-// Image-relative positions derived from the festival map image.
-// x=0 is left edge, x=1 is right edge; y=0 is top, y=1 is bottom.
-// These positions match the stylised Wildeburg map image.
+// ─────────────────────────────────────────────────────────────────────────────
+// All festival locations for Wildeburg @ Netl de Wildste Tuin, Kraggenburg.
+//
+// imagePos  — relative position (0–1) on the stylised festival map image
+// gps       — derived from pixel analysis of the annotated satellite screenshot
+//             Accuracy ≈ 50–150 m.
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const POIS: POI[] = [
-  // ── Stages & Venues ─────────────────────────────────────────────
+  // ── Stages & Venues ─────────────────────────────────────────────────────
   {
     id: 'wildlive',
     name: 'Wildlive',
     category: 'stage',
     imagePos: { x: 0.19, y: 0.32 },
-    description: 'Main stage – live music',
+    gps: { lat: 52.6878, lon: 5.8611 },
+    description: 'Main stage — live music',
   },
   {
     id: 'de-spot',
     name: 'De Spot',
     category: 'stage',
     imagePos: { x: 0.14, y: 0.21 },
+    gps: { lat: 52.6893, lon: 5.8608 },
     description: 'Electronic & DJ stage',
   },
   {
@@ -24,6 +31,7 @@ export const POIS: POI[] = [
     name: 'Radio de Koperen Hond',
     category: 'stage',
     imagePos: { x: 0.43, y: 0.33 },
+    gps: { lat: 52.6877, lon: 5.8635 },
     description: 'Stage & radio broadcast',
   },
   {
@@ -31,6 +39,7 @@ export const POIS: POI[] = [
     name: 'Bud Kas',
     category: 'stage',
     imagePos: { x: 0.50, y: 0.42 },
+    gps: { lat: 52.6854, lon: 5.8660 },
     description: 'Bar & stage',
   },
   {
@@ -38,6 +47,7 @@ export const POIS: POI[] = [
     name: 'LOD',
     category: 'stage',
     imagePos: { x: 0.59, y: 0.46 },
+    gps: { lat: 52.6847, lon: 5.8675 },
     description: 'Stage',
   },
   {
@@ -45,22 +55,25 @@ export const POIS: POI[] = [
     name: 'Bamboe Bios',
     category: 'activity',
     imagePos: { x: 0.31, y: 0.67 },
+    gps: { lat: 52.6821, lon: 5.8659 },
     description: 'Outdoor cinema in the bamboo',
   },
 
-  // ── Areas & Activities ───────────────────────────────────────────
+  // ── Areas & Activities ───────────────────────────────────────────────────
   {
     id: 'strand',
     name: 'Strand',
     category: 'water',
     imagePos: { x: 0.12, y: 0.40 },
-    description: 'Beach area',
+    gps: { lat: 52.6863, lon: 5.8596 },
+    description: 'Beach on the lake',
   },
   {
     id: 'de-baan',
     name: 'De Baan',
     category: 'activity',
     imagePos: { x: 0.09, y: 0.46 },
+    gps: { lat: 52.6867, lon: 5.8594 },
     description: 'Activity track',
   },
   {
@@ -68,6 +81,7 @@ export const POIS: POI[] = [
     name: 'Bamboe Bos',
     category: 'nature',
     imagePos: { x: 0.46, y: 0.52 },
+    gps: { lat: 52.6845, lon: 5.8671 },
     description: 'Bamboo forest',
   },
   {
@@ -75,6 +89,7 @@ export const POIS: POI[] = [
     name: 'Helling',
     category: 'nature',
     imagePos: { x: 0.12, y: 0.53 },
+    gps: { lat: 52.6847, lon: 5.8606 },
     description: 'The slope',
   },
   {
@@ -82,13 +97,15 @@ export const POIS: POI[] = [
     name: 'Duin/Pan',
     category: 'nature',
     imagePos: { x: 0.36, y: 0.57 },
-    description: 'Dune area',
+    gps: { lat: 52.6836, lon: 5.8659 },
+    description: 'Dune & pan area',
   },
   {
     id: 'achter-lijn',
     name: 'Achter Lijn',
     category: 'nature',
     imagePos: { x: 0.11, y: 0.63 },
+    gps: { lat: 52.6823, lon: 5.8592 },
     description: 'Back line area',
   },
   {
@@ -96,15 +113,17 @@ export const POIS: POI[] = [
     name: 'Vuur Toren Strand',
     category: 'water',
     imagePos: { x: 0.75, y: 0.66 },
+    gps: { lat: 52.6814, lon: 5.8745 },
     description: 'Fire tower beach',
   },
 
-  // ── Services & Facilities ────────────────────────────────────────
+  // ── Services & Facilities ────────────────────────────────────────────────
   {
     id: 'ehbo',
     name: 'EHBO',
     category: 'medical',
     imagePos: { x: 0.18, y: 0.17 },
+    gps: { lat: 52.6917, lon: 5.8617 },
     description: 'First aid post',
   },
   {
@@ -112,20 +131,23 @@ export const POIS: POI[] = [
     name: 'Camping Winkel',
     category: 'facility',
     imagePos: { x: 0.24, y: 0.13 },
-    description: 'Camping store – gas, supplies',
+    gps: { lat: 52.6922, lon: 5.8625 },
+    description: 'Camping store — gas, supplies',
   },
   {
     id: 'dorps-tafel',
     name: 'Dorps Tafel',
     category: 'food',
     imagePos: { x: 0.38, y: 0.22 },
-    description: 'Village table – communal dining',
+    gps: { lat: 52.6904, lon: 5.8651 },
+    description: 'Village table — communal dining',
   },
   {
     id: 'hourtentien-1',
     name: 'Hourtentien',
     category: 'facility',
     imagePos: { x: 0.74, y: 0.28 },
+    gps: { lat: 52.6895, lon: 5.8800 },
     description: 'Showers & toilets',
   },
   {
@@ -133,6 +155,7 @@ export const POIS: POI[] = [
     name: 'Hourtentien',
     category: 'facility',
     imagePos: { x: 0.78, y: 0.43 },
+    gps: { lat: 52.6867, lon: 5.8813 },
     description: 'Showers & toilets',
   },
   {
@@ -140,15 +163,17 @@ export const POIS: POI[] = [
     name: 'Hourtentien',
     category: 'facility',
     imagePos: { x: 0.69, y: 0.60 },
+    gps: { lat: 52.6833, lon: 5.8784 },
     description: 'Showers & toilets',
   },
 
-  // ── Camping ──────────────────────────────────────────────────────
+  // ── Camping ──────────────────────────────────────────────────────────────
   {
     id: 'camping-1',
     name: 'Camping 1',
     category: 'camping',
     imagePos: { x: 0.47, y: 0.18 },
+    gps: { lat: 52.6902, lon: 5.8714 },
     description: 'Camping zone 1',
   },
   {
@@ -156,6 +181,7 @@ export const POIS: POI[] = [
     name: 'Camping 2',
     category: 'camping',
     imagePos: { x: 0.72, y: 0.37 },
+    gps: { lat: 52.6867, lon: 5.8777 },
     description: 'Camping zone 2',
   },
   {
@@ -163,6 +189,7 @@ export const POIS: POI[] = [
     name: 'Camping 4',
     category: 'camping',
     imagePos: { x: 0.21, y: 0.73 },
+    gps: { lat: 52.6812, lon: 5.8639 },
     description: 'Camping zone 4',
   },
   {
@@ -170,6 +197,7 @@ export const POIS: POI[] = [
     name: 'Camping 5',
     category: 'camping',
     imagePos: { x: 0.37, y: 0.78 },
+    gps: { lat: 52.6800, lon: 5.8668 },
     description: 'Camping zone 5',
   },
 ];

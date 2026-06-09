@@ -13,9 +13,10 @@ import { CompassIndicator } from '../components/CompassIndicator';
 import { useLocation } from '../hooks/useLocation';
 import { useCompass } from '../hooks/useCompass';
 import { loadCalibration } from '../utils/storage';
-import { PLACEHOLDER_CALIBRATION } from '../data/festivalConfig';
+import { DEFAULT_CALIBRATION } from '../data/festivalConfig';
 import { POIS } from '../data/pois';
-import { CalibrationData } from '../types';
+import { haversineMeters } from '../utils/geoTransform';
+import { CalibrationData, POI } from '../types';
 
 interface Props {
   navigation: any;
@@ -28,9 +29,12 @@ export function MapScreen({ navigation }: Props) {
   const [showPOIs, setShowPOIs] = useState(true);
 
   // ── Load calibration on mount ─────────────────────────────────────────────
+  // Nearest POI (updates every GPS tick)
+  const [nearestPOI, setNearestPOI] = useState<{ poi: POI; meters: number } | null>(null);
+
   useEffect(() => {
     loadCalibration().then((saved) => {
-      setCalibration(saved ?? PLACEHOLDER_CALIBRATION);
+      setCalibration(saved ?? DEFAULT_CALIBRATION);
     });
   }, []);
 
@@ -47,6 +51,18 @@ export function MapScreen({ navigation }: Props) {
   }, [navigation, reloadCalibration]);
 
   const isUncalibrated = calibration?.createdAt === 0;
+
+  // Compute nearest POI whenever location updates
+  useEffect(() => {
+    if (!location) return;
+    let minDist = Infinity;
+    let closest: POI | null = null;
+    for (const poi of POIS) {
+      const d = haversineMeters({ lat: location.lat, lon: location.lon }, poi.gps);
+      if (d < minDist) { minDist = d; closest = poi; }
+    }
+    if (closest) setNearestPOI({ poi: closest, meters: Math.round(minDist) });
+  }, [location]);
 
   const gpsStatusColor = () => {
     switch (status) {
@@ -92,6 +108,18 @@ export function MapScreen({ navigation }: Props) {
           {/* Compass */}
           <CompassIndicator heading={heading} />
         </View>
+
+        {/* Nearest POI chip */}
+        {nearestPOI && nearestPOI.meters < 2000 && (
+          <View style={styles.nearestChip}>
+            <Ionicons name="navigate-circle-outline" size={14} color="#FFB300" />
+            <Text style={styles.nearestText} numberOfLines={1}>
+              {nearestPOI.poi.name}
+              {'  '}
+              <Text style={styles.nearestDist}>{nearestPOI.meters} m</Text>
+            </Text>
+          </View>
+        )}
 
         {/* Uncalibrated warning banner */}
         {isUncalibrated && (
@@ -187,6 +215,28 @@ const styles = StyleSheet.create({
     borderColor: '#FFB300',
     paddingVertical: 8,
     paddingHorizontal: 12,
+  },
+  nearestChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginHorizontal: 16,
+    marginTop: 8,
+    backgroundColor: 'rgba(20,20,20,0.82)',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignSelf: 'flex-start',
+  },
+  nearestText: {
+    color: '#EEE',
+    fontSize: 12,
+    fontWeight: '500',
+    maxWidth: 200,
+  },
+  nearestDist: {
+    color: '#FFB300',
+    fontWeight: '700',
   },
   calibrationBannerText: {
     color: '#FFB300',

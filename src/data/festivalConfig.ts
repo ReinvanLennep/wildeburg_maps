@@ -1,36 +1,57 @@
 import { CalibrationData } from '../types';
 
-// Approximate GPS bounding box for the Wildeburg festival terrain.
-// !! These are PLACEHOLDER coordinates !!
-// Use the Calibration screen to set real GPS reference points once on-site.
-// The festival is somewhere in the Netherlands – replace with actual coords.
-export const PLACEHOLDER_CALIBRATION: CalibrationData = {
-  createdAt: 0, // 0 = not yet calibrated
+// ─────────────────────────────────────────────────────────────────────────────
+// Wildeburg festival — Netl de Wildste Tuin, Leemringweg 19, Kraggenburg (NL)
+// GPS coordinates derived from pixel analysis of the annotated Google Maps
+// satellite screenshot cross-referenced with confirmed address coordinates
+// (52.683 °N, 5.874 °E).  Accuracy ≈ 50–150 m.  Use the Calibration screen
+// to improve accuracy by walking to 2–3 known spots with the app open.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Screenshot image bounds (estimated from satellite zoom level and known address)
+export const SCREENSHOT_BOUNDS = {
+  north: 52.695,
+  south: 52.675,
+  west: 5.856,
+  east: 5.889,
+};
+
+// 4 control points that link GPS positions (from screenshot analysis) to
+// relative pixel positions on the artistic festival map image.
+// Spread across all four quadrants for the best affine accuracy.
+export const DEFAULT_CALIBRATION: CalibrationData = {
+  // Non-zero = real coordinates; the app won't show the "needs calibration" banner.
+  createdAt: 1,
   points: [
     {
-      id: 'nw-corner',
-      label: 'Top-left corner (NW)',
-      gps: { lat: 51.760, lon: 5.228 },
-      imagePos: { x: 0.05, y: 0.08 },
+      id: 'wildlive',
+      label: 'Wildlive (main stage)',
+      gps: { lat: 52.6878, lon: 5.8611 },
+      imagePos: { x: 0.19, y: 0.32 },
     },
     {
-      id: 'se-corner',
-      label: 'Bottom-right corner (SE)',
-      gps: { lat: 51.749, lon: 5.245 },
-      imagePos: { x: 0.92, y: 0.90 },
+      id: 'camping-1',
+      label: 'Camping 1',
+      gps: { lat: 52.6902, lon: 5.8714 },
+      imagePos: { x: 0.47, y: 0.18 },
+    },
+    {
+      id: 'camping-4',
+      label: 'Camping 4',
+      gps: { lat: 52.6812, lon: 5.8639 },
+      imagePos: { x: 0.21, y: 0.73 },
+    },
+    {
+      id: 'camping-2',
+      label: 'Camping 2',
+      gps: { lat: 52.6867, lon: 5.8777 },
+      imagePos: { x: 0.72, y: 0.37 },
     },
   ],
 };
 
-// How many metres does one degree of latitude / longitude represent
-// at 51.75 °N (approximate festival latitude)?
-export const METERS_PER_DEG_LAT = 111_320;
-export const METERS_PER_DEG_LON = 111_320 * Math.cos((51.75 * Math.PI) / 180);
-
-// Natural image dimensions (pixels). Used for accuracy calculations.
-export const MAP_IMAGE = {
-  // These are updated at runtime via Image.getSize(); defaults keep
-  // the aspect ratio consistent before the image loads.
-  width: 508,
-  height: 870,
+// Keep a separate placeholder so the CalibrationScreen can start fresh
+export const PLACEHOLDER_CALIBRATION: CalibrationData = {
+  createdAt: 0,
+  points: [],
 };
