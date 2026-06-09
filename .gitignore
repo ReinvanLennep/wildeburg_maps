@@ -1,15 +1,44 @@
-node_modules/
-.expo/
-dist/
-npm-debug.*
+# Gradle
+.gradle/
+build/
+local.properties
+*.hprof
+
+# Android
+/composeApp/release/
+*.apk
+*.aab
+*.ap_
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.orig.*
-web-build/
+
+# iOS / Xcode
+*.xcworkspace/
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+*.xcscmblueprint
+Pods/
+.build/
+iosApp/iosApp.xcodeproj/xcuserdata/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+captures/
+
+# macOS
 .DS_Store
+
+# Environment
 *.env
-android/
-ios/
