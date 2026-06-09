@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Wildeburg Maps",
+    "slug": "wildeburg-maps",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.wildeburg.maps",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Wildeburg Maps uses your location to show where you are on the festival map.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Wildeburg Maps uses your location to show where you are on the festival map.",
+        "NSMotionUsageDescription": "Wildeburg Maps uses the compass to show which direction you are facing."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1a1a1a"
+      },
+      "package": "com.wildeburg.maps",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Wildeburg Maps uses your location to show where you are on the festival map."
+        }
+      ]
+    ]
+  }
+}
