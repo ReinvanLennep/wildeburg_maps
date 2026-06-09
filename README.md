@@ -1,105 +1,114 @@
-# Wildeburg Maps 🗺️
+# Wildeburg Maps
 
 Offline GPS navigation app for the Wildeburg festival at **Netl de Wildste Tuin, Kraggenburg**. Shows your real-time position on the festival map — works completely without internet.
 
 ## Features
 
-- **Offline-first** — the festival map is bundled in the app; GPS works via satellite, no internet needed
-- **Pre-loaded GPS coordinates** — all stages and locations are already georeferenced from satellite image analysis; works out of the box
-- **Pinch to zoom / pan** — smooth gestures, double-tap to zoom in
+- **Offline-first** — festival map is bundled; GPS works via satellite, no internet needed
+- **Pre-loaded calibration** — all stages georeferenced from satellite analysis; works out of the box (~50–150 m accuracy)
+- **Pinch to zoom / pan** — smooth gestures, double-tap to reset zoom
 - **Live location dot** — animated position with accuracy circle and heading cone
-- **Nearest location chip** — live readout of the closest stage/facility and your distance to it
-- **22 POI markers** — all stages, camping zones, services, and activities; tap any pin for details
-- **Compass indicator** — always know which direction you're facing
-- **Calibration system** — walk to any known spot and set a GPS reference point to sharpen accuracy from ~150 m to ~10 m
+- **Nearest location chip** — closest stage/facility and distance in real time
+- **22 POI markers** — all stages, camping zones, services, activities; tap any pin for details
+- **Compass indicator** — rotating needle always points north
+- **Calibration system** — improve accuracy to ~10 m by adding GPS reference points on-site
 
-## Getting started
+## Tech stack
 
-### Prerequisites
+- **Kotlin Multiplatform (KMP)** with **Compose Multiplatform** — shared UI on Android and iOS
+- `CLLocationManager` (iOS) / `FusedLocationProviderClient` (Android) — GPS
+- `SensorManager` (Android) / `CLLocationManager.startUpdatingHeading()` (iOS) — compass
+- `multiplatform-settings` — persisted calibration data
+- Affine 3-point GPS ↔ image pixel transform (Gaussian elimination)
 
-- [Node.js](https://nodejs.org) ≥ 18
-- [Expo Go](https://expo.dev/client) app on your phone (iOS or Android)
+## Prerequisites
 
-### Run on your phone (Expo Go)
+| Tool | Minimum version |
+|------|----------------|
+| Android Studio (Hedgehog or later) | with KMP plugin |
+| JDK | 17 |
+| Android SDK | API 24+ |
+| Xcode (iOS only) | 15+ |
+| macOS (iOS only) | required for iOS build |
 
-```bash
-# Clone and switch to the dev branch
-git clone https://github.com/reinvanlennep/wildeburg_maps.git
-cd wildeburg_maps
-git checkout claude/wildeburg-offline-map-app-9e5gc8
+## Run on Android
 
-# Install dependencies
-npm install
+1. Clone the repo and check out the dev branch:
+   ```bash
+   git clone https://github.com/reinvanlennep/wildeburg_maps.git
+   cd wildeburg_maps
+   git checkout claude/wildeburg-offline-map-app-9e5gc8
+   ```
+2. Open **Android Studio** → *Open* → select the `wildeburg_maps` folder.
+3. Let Gradle sync finish (first sync downloads ~1 GB of dependencies).
+4. Connect an Android device or start an emulator.
+5. Run the `:composeApp` configuration (green Play button).
 
-# Start the dev server
-npx expo start
-```
+## Run on iOS
 
-Scan the QR code with **Expo Go** (Android) or the **Camera app** (iOS). Your phone and computer must be on the same WiFi.
-
-### Build a standalone app (share with friends)
-
-```bash
-npm install -g eas-cli
-eas login
-eas build --platform android --profile preview   # APK, no Play Store needed
-eas build --platform ios                          # requires Apple Developer account
-```
+1. Open the project in Android Studio and let Gradle sync complete.
+2. In a terminal, build the iOS framework:
+   ```bash
+   ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+   ```
+3. Open `iosApp/iosApp.xcodeproj` in Xcode.  
+   *(If you don't have the `.xcodeproj` yet, create a new Xcode project named `iosApp` in the `iosApp/` folder and wire up `ContentView.swift`.)*
+4. Select your simulator or device and press Run.
 
 ## GPS accuracy
 
-The app ships with coordinates derived from pixel analysis of an annotated satellite screenshot of the venue, cross-referenced with the confirmed address (Leemringweg 19, Kraggenburg — 52.683°N, 5.874°E). Expected accuracy out of the box: **~50–150 m**.
+Ships with 4-point calibration derived from satellite image analysis of the venue (52.683°N, 5.874°E). Expected out-of-the-box accuracy: **~50–150 m**.
 
-### Improving accuracy on-site (optional)
+### Improve accuracy on-site (optional)
 
-Walk to any recognisable location and add a calibration point to tighten accuracy to ~10 m:
+Walk to any recognisable spot and add a calibration point to reach ~10 m:
 
 1. Open the **Calibrate** tab
 2. Tap **"Add calibration point"**
-3. Tap that spot on the festival map image
+3. Enter the spot's label and tap it on the map image
 4. Press **"Use my current GPS"** while standing there
 5. Repeat for a second (ideally third) point
-6. Press **"Save calibration"**
+6. Press **Save**
 
 ## Venue
 
-**Netl de Wildste Tuin**
-Leemringweg 19, 8317 RD Kraggenburg, Flevoland, Netherlands
+**Netl de Wildste Tuin**  
+Leemringweg 19, 8317 RD Kraggenburg, Flevoland, Netherlands  
 52.6830°N, 5.8736°E
 
 ## Project structure
 
 ```
-src/
-├── components/
-│   ├── FestivalMap.tsx       # Pannable/zoomable map with overlays
-│   ├── LocationDot.tsx       # Animated GPS position indicator
-│   ├── POIMarker.tsx         # Tappable POI pin
-│   └── CompassIndicator.tsx  # Compass rose
-├── screens/
-│   ├── MapScreen.tsx         # Main screen + nearest-POI chip
-│   ├── CalibrationScreen.tsx # GPS calibration wizard
-│   └── LegendScreen.tsx      # All POIs grouped by category
-├── hooks/
-│   ├── useLocation.ts        # expo-location wrapper
-│   └── useCompass.ts         # Magnetometer heading
-├── utils/
-│   ├── geoTransform.ts       # Affine GPS ↔ pixel transform (2–4 control points)
-│   └── storage.ts            # AsyncStorage helpers
-└── data/
-    ├── pois.ts               # All 22 POIs with GPS coords + image positions
-    └── festivalConfig.ts     # Default 4-point calibration from satellite analysis
+composeApp/src/
+├── commonMain/kotlin/com/wildeburg/maps/
+│   ├── App.kt                          # Root composable, navigation, dark theme
+│   ├── data/
+│   │   ├── Types.kt                    # GpsCoords, POI, LocationData, etc.
+│   │   ├── POIs.kt                     # All 22 POIs with coordinates
+│   │   └── FestivalConfig.kt           # Default calibration + map aspect ratio
+│   ├── domain/
+│   │   ├── GeoTransform.kt             # Affine GPS ↔ pixel transform
+│   │   └── CalibrationStorage.kt       # Persist / load calibration
+│   ├── platform/
+│   │   ├── LocationProvider.kt         # expect class
+│   │   └── CompassProvider.kt          # expect class
+│   └── ui/
+│       ├── MapScreen.kt
+│       ├── CalibrationScreen.kt
+│       ├── LegendScreen.kt
+│       └── components/
+│           ├── FestivalMapView.kt       # Pannable/zoomable map
+│           ├── LocationDot.kt           # Animated GPS dot
+│           ├── POIMarker.kt             # Tappable POI pin
+│           └── CompassIndicator.kt      # Compass rose
+├── androidMain/                        # FusedLocationProviderClient, SensorManager
+└── iosMain/                            # CLLocationManager delegate
+
+iosApp/iosApp/                          # Swift entry point
+composeApp/src/commonMain/composeResources/drawable/
+└── festival_map.png                    # Bundled offline map image
 ```
 
-## Updating the festival map image
+## Updating the festival map
 
-Replace `assets/images/festival-map.png` with the new map. Update POI image positions in `src/data/pois.ts` (values are 0–1 fractions of image width/height, measured on the new image).
-
-## Tech stack
-
-- **React Native + Expo SDK 51**
-- `react-native-gesture-handler` + `react-native-reanimated` — smooth pan/zoom
-- `expo-location` — GPS (works offline via satellite)
-- `expo-sensors` — compass heading
-- `@react-native-async-storage/async-storage` — persist calibration
-- `@react-navigation/bottom-tabs` — tab navigation
+Replace `composeApp/src/commonMain/composeResources/drawable/festival_map.png` with the new image. Update POI image positions in `data/POIs.kt` (values are 0–1 fractions of image width/height). Update `MAP_ASPECT_RATIO` in `data/FestivalConfig.kt` if the aspect ratio changed.
