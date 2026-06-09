@@ -13,7 +13,7 @@
     "@react-native-async-storage/async-storage": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/native": "*",
-    "expo": "latest",
+    "expo": "^54.0.0",
     "expo-location": "*",
     "expo-sensors": "*",
     "expo-splash-screen": "*",
