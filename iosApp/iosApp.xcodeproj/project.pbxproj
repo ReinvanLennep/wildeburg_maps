@@ -146,7 +146,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 2>&1\nelse\n  ./gradlew :composeApp:linkDebugFrameworkIosArm64 2>&1\nfi\n";
+			shellScript = "export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)\nexport PATH=\"$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH\"\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 2>&1\nelse\n  ./gradlew :composeApp:linkDebugFrameworkIosArm64 2>&1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
