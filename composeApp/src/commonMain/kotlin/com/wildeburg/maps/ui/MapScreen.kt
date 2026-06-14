@@ -16,14 +16,10 @@ import com.wildeburg.maps.platform.CompassProvider
 import com.wildeburg.maps.platform.LocationProvider
 import com.wildeburg.maps.ui.components.*
 
-private val BG   = Color(0xFF111111)
 private val CHIP = Color(0xCC141414)
 
 @Composable
-fun MapScreen(
-    calibration: CalibrationData,
-    onOpenCalibration: () -> Unit
-) {
+fun MapScreen() {
     val locationProvider = remember { LocationProvider() }
     val compassProvider  = remember { CompassProvider() }
 
@@ -31,7 +27,6 @@ fun MapScreen(
     var heading  by remember { mutableStateOf<Float?>(null) }
     var showPOIs by remember { mutableStateOf(true) }
 
-    // Nearest POI
     val nearest: Pair<POI, Int>? = remember(location) {
         if (location == null) return@remember null
         POIS.minByOrNull { haversineMeters(GpsCoords(location!!.lat, location!!.lon), it.gps) }
@@ -50,15 +45,11 @@ fun MapScreen(
         }
     }
 
-    val isUncalibrated = calibration.createdAt == 0L
-
     Box(modifier = Modifier.fillMaxSize()) {
-        // Map
         FestivalMapView(
-            calibration = calibration,
-            location    = location?.copy(heading = heading),
-            pois        = if (showPOIs) POIS else emptyList(),
-            modifier    = Modifier.fillMaxSize()
+            pois     = if (showPOIs) POIS else emptyList(),
+            location = location?.copy(heading = heading),
+            modifier = Modifier.fillMaxSize()
         )
 
         // Top HUD
@@ -91,32 +82,16 @@ fun MapScreen(
                     }
                 }
             }
-
-            if (isUncalibrated) {
-                Surface(
-                    color = Color(0xCC1A1400),
-                    shape = RoundedCornerShape(8.dp),
-                    border = ButtonDefaults.outlinedButtonBorder,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextButton(onClick = onOpenCalibration) {
-                        Text("⚠ Placeholder GPS — tap to calibrate", color = Color(0xFFFFB300), fontSize = 12.sp)
-                    }
-                }
-            }
         }
 
-        // FABs bottom-right
-        Column(
+        // POI toggle FAB
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.End
+                .padding(12.dp)
         ) {
             SmallFab(label = if (showPOIs) "📍" else "📌") { showPOIs = !showPOIs }
-            SmallFab(label = "⚙️") { onOpenCalibration() }
         }
     }
 }
@@ -124,7 +99,7 @@ fun MapScreen(
 @Composable
 private fun GpsChip(location: LocationData?) {
     val (color, label) = when {
-        location != null -> Color(0xFF4CAF50) to "±${location.accuracy?.toInt() ?: "?"}m"
+        location != null -> Color(0xFF4CAF50) to "±${location.accuracy.toInt()}m"
         else             -> Color(0xFF9E9E9E) to "GPS…"
     }
     Surface(color = CHIP, shape = RoundedCornerShape(20.dp), tonalElevation = 0.dp) {
@@ -133,12 +108,6 @@ private fun GpsChip(location: LocationData?) {
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Box(
-                modifier = androidx.compose.ui.Modifier
-                    .size(8.dp)
-                    .also { /* colored circle via Canvas */ }
-            )
-            // simple dot
             Surface(color = color, shape = RoundedCornerShape(4.dp),
                 modifier = Modifier.size(8.dp)) {}
             Text(label, color = Color(0xFFEEEEEE), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
