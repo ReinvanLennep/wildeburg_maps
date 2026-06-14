@@ -24,7 +24,9 @@ actual fun FestivalMapView(
     modifier: Modifier
 ) {
     val annotations    = remember { mutableListOf<MKPointAnnotation>() }
-    val renderedPois   = remember { mutableListOf<POI>() }
+    // Holds the last list reference we rendered — using an array so we can
+    // mutate the slot without triggering recomposition (unlike mutableStateOf).
+    val lastPoisSlot   = remember { arrayOfNulls<List<POI>>(1) }
 
     UIKitView(
         factory = {
@@ -41,23 +43,23 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // Only sync annotations when the pois list actually changes.
-            // Without this guard, the update block runs on every GPS location
-            // recomposition (~1 Hz) and interferes with active pan gestures.
-            if (pois == renderedPois) return@UIKitView
-
-            renderedPois.clear()
-            renderedPois.addAll(pois)
-
-            annotations.forEach { map.removeAnnotation(it) }
-            annotations.clear()
-            pois.forEach { poi ->
-                val ann = MKPointAnnotation()
-                ann.setCoordinate(CLLocationCoordinate2DMake(poi.gps.lat, poi.gps.lon))
-                ann.setTitle("${poiEmoji(poi.category)} ${poi.name}")
-                poi.description?.let { ann.setSubtitle(it) }
-                map.addAnnotation(ann)
-                annotations += ann
+            // Guard: skip annotation sync unless the list reference changed.
+            // Uses === (identity) because pois is always either the global POIS
+            // object or Kotlin's emptyList() singleton — both stable references.
+            // This prevents ~1 Hz annotation teardown during GPS recompositions,
+            // which was interrupting pan/zoom gesture recognizers.
+            if (pois !== lastPoisSlot[0]) {
+                lastPoisSlot[0] = pois
+                annotations.forEach { map.removeAnnotation(it) }
+                annotations.clear()
+                pois.forEach { poi ->
+                    val ann = MKPointAnnotation()
+                    ann.setCoordinate(CLLocationCoordinate2DMake(poi.gps.lat, poi.gps.lon))
+                    ann.setTitle("${poiEmoji(poi.category)} ${poi.name}")
+                    poi.description?.let { ann.setSubtitle(it) }
+                    map.addAnnotation(ann)
+                    annotations += ann
+                }
             }
         },
         modifier = modifier,
