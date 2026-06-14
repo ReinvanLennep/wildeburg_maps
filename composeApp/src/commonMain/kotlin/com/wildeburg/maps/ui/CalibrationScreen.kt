@@ -121,7 +121,7 @@ fun CalibrationScreen(
         if (points.size >= 2) {
             item {
                 Button(
-                    onClick = { onSave(CalibrationData(points = points, createdAt = System.currentTimeMillis())) },
+                    onClick = { onSave(CalibrationData(points = points)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = ACCENT)
                 ) {
@@ -160,7 +160,7 @@ fun CalibrationScreen(
                     val ix  = dialogImgX.toFloatOrNull() ?: return@TextButton
                     val iy  = dialogImgY.toFloatOrNull() ?: return@TextButton
                     points = points + ControlPoint(
-                        id = System.currentTimeMillis().toString(),
+                        id = kotlin.random.Random.nextLong().toString(),
                         label = dialogLabel.ifBlank { "Point ${points.size + 1}" },
                         gps = GpsCoords(lat, lon),
                         imagePos = ImageRelPos(ix, iy)
@@ -191,4 +191,12 @@ private fun CalibInput(label: String, value: String, kb: KeyboardType = Keyboard
     )
 }
 
-private fun Double.format() = "%.5f".format(this)
+private fun Double.format(): String {
+    val factor = 100000.0
+    val rounded = kotlin.math.round(this * factor) / factor
+    return rounded.toString().let { s ->
+        val dot = s.indexOf('.')
+        if (dot < 0) "$s.00000"
+        else s.take(dot + 6).padEnd(dot + 6, '0')
+    }
+}

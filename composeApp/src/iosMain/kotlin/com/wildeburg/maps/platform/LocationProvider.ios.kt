@@ -1,9 +1,12 @@
 package com.wildeburg.maps.platform
 
 import com.wildeburg.maps.data.LocationData
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import platform.CoreLocation.*
 import platform.darwin.NSObject
 
+@OptIn(ExperimentalForeignApi::class)
 actual class LocationProvider actual constructor() {
     private val manager = CLLocationManager()
     private var onUpdate: ((LocationData) -> Unit)? = null
