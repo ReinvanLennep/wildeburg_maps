@@ -4,4 +4,8 @@ import androidx.compose.ui.window.ComposeUIViewController
 
 fun MainViewController() = ComposeUIViewController(
     configure = { enforceStrictPlistSanityCheck = false }
-) { App() }
+) {
+    println(">>> COMPOSE: starting App()")
+    App()
+    println(">>> COMPOSE: App() returned (no crash)")
+}
