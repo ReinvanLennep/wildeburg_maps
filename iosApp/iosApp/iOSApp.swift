@@ -1,17 +1,11 @@
-import UIKit
-import ComposeApp
+import SwiftUI
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        window = UIWindow()
-        window?.rootViewController = MainViewControllerKt.MainViewController()
-        window?.makeKeyAndVisible()
-        return true
+@main
+struct WildeburgMapsApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ComposeView()
+                .ignoresSafeArea(.all)
+        }
     }
 }
