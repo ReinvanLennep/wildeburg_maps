@@ -23,12 +23,16 @@ actual fun FestivalMapView(
     location: LocationData?,
     modifier: Modifier
 ) {
-    val annotations = remember { mutableListOf<MKPointAnnotation>() }
+    val annotations    = remember { mutableListOf<MKPointAnnotation>() }
+    val renderedPois   = remember { mutableListOf<POI>() }
 
     UIKitView(
         factory = {
             MKMapView().apply {
                 showsUserLocation = true
+                isScrollEnabled   = true
+                isZoomEnabled     = true
+                isRotateEnabled   = true
                 val center = CLLocationCoordinate2DMake(FESTIVAL_LAT, FESTIVAL_LON)
                 setRegion(
                     MKCoordinateRegionMakeWithDistance(center, 1200.0, 1200.0),
@@ -37,6 +41,14 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
+            // Only sync annotations when the pois list actually changes.
+            // Without this guard, the update block runs on every GPS location
+            // recomposition (~1 Hz) and interferes with active pan gestures.
+            if (pois == renderedPois) return@UIKitView
+
+            renderedPois.clear()
+            renderedPois.addAll(pois)
+
             annotations.forEach { map.removeAnnotation(it) }
             annotations.clear()
             pois.forEach { poi ->
