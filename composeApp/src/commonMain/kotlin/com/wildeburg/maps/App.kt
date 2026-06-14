@@ -16,11 +16,8 @@ private enum class Tab { MAP, LEGEND, CALIBRATE }
 
 @Composable
 fun App() {
-    println(">>> App: enter")
     var selectedTab by remember { mutableStateOf(Tab.MAP) }
-    println(">>> App: tab state OK")
     var calibration by remember { mutableStateOf<CalibrationData>(CalibrationStorage.load()) }
-    println(">>> App: calibration loaded OK")
 
     MaterialTheme(
         colorScheme = darkColorScheme(
@@ -29,7 +26,6 @@ fun App() {
             background= Color(0xFF111111)
         )
     ) {
-        println(">>> App: MaterialTheme OK, entering Scaffold")
         Scaffold(
             containerColor = Color(0xFF111111),
             bottomBar = {
