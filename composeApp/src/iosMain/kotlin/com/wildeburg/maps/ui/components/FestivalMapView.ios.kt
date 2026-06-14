@@ -3,6 +3,7 @@ package com.wildeburg.maps.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitInteractionMode
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
@@ -47,6 +48,7 @@ actual fun FestivalMapView(
                 annotations += ann
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        interactionMode = UIKitInteractionMode.NonCooperative
     )
 }
