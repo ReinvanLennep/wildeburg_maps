@@ -58,7 +58,7 @@ fun LegendScreen() {
                         Text(emoji, fontSize = 18.sp)
                     }
                     Text(
-                        cat.name.lowercase().replaceFirstChar { it.uppercase() },
+                        categoryDisplayName(cat),
                         color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp
                     )
                 }

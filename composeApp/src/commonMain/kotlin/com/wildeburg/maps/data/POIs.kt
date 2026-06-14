@@ -6,37 +6,37 @@ val POIS = listOf(
     // ── Stages ───────────────────────────────────────────────────────────────
     POI("wildlive", "Wildlive", POICategory.STAGE,
         GpsCoords(52.680115, 5.880332), "Main stage — live music"),
-    POI("de-spot", "De Spot", POICategory.STAGE,
-        GpsCoords(52.679827, 5.878452), "Electronic & DJ stage"),
     POI("radio-koperen-hond", "Radio de Koperen Hond", POICategory.STAGE,
         GpsCoords(52.681806, 5.880589), "Stage & radio broadcast"),
     POI("bud-kas", "Bud Kas", POICategory.STAGE,
         GpsCoords(52.682528, 5.880851), "Bar & stage"),
     POI("lodge", "LODGE", POICategory.STAGE,
         GpsCoords(52.682968, 5.881256), "Stage"),
-    POI("bamboe-bios", "Bamboe Bios", POICategory.ACTIVITY,
-        GpsCoords(52.683301, 5.884510), "Outdoor cinema in the bamboo"),
+    POI("strand", "Strand", POICategory.STAGE,
+        GpsCoords(52.680824, 5.881047), "Beach on the lake"),
+    POI("de-baan", "De Baan", POICategory.STAGE,
+        GpsCoords(52.680678, 5.882156), "Activity track"),
+    POI("bamboe-bos", "Bamboe Bos", POICategory.STAGE,
+        GpsCoords(52.682438, 5.881688), "Bamboo forest"),
+    POI("helling", "Helling", POICategory.STAGE,
+        GpsCoords(52.681479, 5.883310), "The slope"),
+    POI("duin-pan", "Duin/Pan", POICategory.STAGE,
+        GpsCoords(52.682970, 5.882118), "Dune & pan area"),
+    POI("achter-tuin", "Achter Tuin", POICategory.STAGE,
+        GpsCoords(52.682208, 5.885464), "Back garden area"),
 
     // ── Areas ────────────────────────────────────────────────────────────────
-    POI("strand", "Strand", POICategory.WATER,
-        GpsCoords(52.680824, 5.881047), "Beach on the lake"),
-    POI("de-baan", "De Baan", POICategory.ACTIVITY,
-        GpsCoords(52.680678, 5.882156), "Activity track"),
-    POI("bamboe-bos", "Bamboe Bos", POICategory.NATURE,
-        GpsCoords(52.682438, 5.881688), "Bamboo forest"),
-    POI("helling", "Helling", POICategory.NATURE,
-        GpsCoords(52.681479, 5.883310), "The slope"),
-    POI("duin-pan", "Duin/Pan", POICategory.NATURE,
-        GpsCoords(52.682970, 5.882118), "Dune & pan area"),
-    POI("achter-tuin", "Achter Tuin", POICategory.NATURE,
-        GpsCoords(52.682208, 5.885464), "Back garden area"),
-    POI("vuur-toren-strand", "Vuur Toren Strand", POICategory.WATER,
+    POI("de-spot", "De Spot", POICategory.AREA,
+        GpsCoords(52.679827, 5.878452), "Electronic & DJ stage"),
+    POI("vuur-toren-strand", "Vuur Toren Strand", POICategory.AREA,
         GpsCoords(52.684752, 5.884237), "Fire tower beach"),
+    POI("bamboe-bios", "Bamboe Bios", POICategory.AREA,
+        GpsCoords(52.683301, 5.884510), "Outdoor cinema in the bamboo"),
 
     // ── Services ─────────────────────────────────────────────────────────────
-    POI("ehbo", "EHBO", POICategory.MEDICAL,
+    POI("ehbo", "EHBO", POICategory.SERVICE,
         GpsCoords(52.679597, 5.879487), "First aid post"),
-    POI("camping-winkel", "Camping Winkel", POICategory.FACILITY,
+    POI("camping-winkel", "Camping Winkel", POICategory.SERVICE,
         GpsCoords(52.679685, 5.877996), "Camping store — gas, supplies"),
 
     // ── Camping ──────────────────────────────────────────────────────────────
@@ -53,23 +53,22 @@ val POIS = listOf(
 )
 
 fun poiColor(category: POICategory) = when (category) {
-    POICategory.STAGE    -> Color(0xFFFF6B35)
-    POICategory.CAMPING  -> Color(0xFF4CAF50)
-    POICategory.FOOD     -> Color(0xFFFFB300)
-    POICategory.MEDICAL  -> Color(0xFFF44336)
-    POICategory.WATER    -> Color(0xFF29B6F6)
-    POICategory.NATURE   -> Color(0xFF66BB6A)
-    POICategory.ACTIVITY -> Color(0xFFAB47BC)
-    POICategory.FACILITY -> Color(0xFF78909C)
+    POICategory.STAGE   -> Color(0xFFFF6B35)
+    POICategory.AREA    -> Color(0xFFAB47BC)
+    POICategory.SERVICE -> Color(0xFF78909C)
+    POICategory.CAMPING -> Color(0xFF4CAF50)
 }
 
 fun poiEmoji(category: POICategory) = when (category) {
-    POICategory.STAGE    -> "🎵"
-    POICategory.CAMPING  -> "⛺"
-    POICategory.FOOD     -> "🍺"
-    POICategory.MEDICAL  -> "🏥"
-    POICategory.WATER    -> "🏊"
-    POICategory.NATURE   -> "🌲"
-    POICategory.ACTIVITY -> "🎪"
-    POICategory.FACILITY -> "🚿"
+    POICategory.STAGE   -> "🎵"
+    POICategory.AREA    -> "🎪"
+    POICategory.SERVICE -> "ℹ️"
+    POICategory.CAMPING -> "⛺"
+}
+
+fun categoryDisplayName(category: POICategory) = when (category) {
+    POICategory.STAGE   -> "Stages"
+    POICategory.AREA    -> "Areas"
+    POICategory.SERVICE -> "Services"
+    POICategory.CAMPING -> "Camping"
 }
