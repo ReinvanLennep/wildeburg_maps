@@ -146,7 +146,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)\nexport PATH=\"$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH\"\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 2>&1\nelse\n  ./gradlew :composeApp:linkDebugFrameworkIosArm64 2>&1\nfi\n";
+			shellScript = "export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)\nexport PATH=\"$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH\"\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 2>&1\n  FRAMEWORK=\"$SRCROOT/../composeApp/build/bin/iosSimulatorArm64/debugFramework/ComposeApp.framework\"\nelse\n  ./gradlew :composeApp:linkDebugFrameworkIosArm64 2>&1\n  FRAMEWORK=\"$SRCROOT/../composeApp/build/bin/iosArm64/debugFramework/ComposeApp.framework\"\nfi\nif [ -d \"$FRAMEWORK/compose-resources\" ]; then\n  mkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/compose-resources\"\n  rsync -a --delete \"$FRAMEWORK/compose-resources/\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/compose-resources/\"\n  echo \"compose-resources copied to app bundle\"\nelse\n  echo \"Warning: $FRAMEWORK/compose-resources not found\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
