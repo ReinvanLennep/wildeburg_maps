@@ -25,9 +25,8 @@ actual fun FestivalMapView(
     location: LocationData?,
     modifier: Modifier
 ) {
-    val annotations    = remember { mutableListOf<MKPointAnnotation>() }
-    val lastPoisSlot   = remember { arrayOfNulls<List<POI>>(1) }
-    val gestureFixDone = remember { booleanArrayOf(false) }
+    val annotations  = remember { mutableListOf<MKPointAnnotation>() }
+    val lastPoisSlot = remember { arrayOfNulls<List<POI>>(1) }
 
     UIKitView(
         factory = {
@@ -41,12 +40,13 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // Wait for the view to be in a UIWindow before patching recognizers.
-            // Stop the walk AT the UIWindow — modifying UIWindow's system gate
-            // gesture recognizers (home swipe, back gesture) is forbidden by iOS
-            // and produces the "undesired side effects" warning.
-            if (!gestureFixDone[0] && map.window != null) {
-                gestureFixDone[0] = true
+            // Re-apply on every update: Compose recreates its gesture recognizers
+            // on each recomposition (~1 Hz from GPS), so a one-shot fix only patches
+            // the original set and misses every replacement. Walking on each frame
+            // costs ~microseconds (5 views × 3 recognizers max).
+            // Stop before UIWindow — its system gate recognizers (home swipe, back
+            // gesture) are forbidden from modification by iOS.
+            if (map.window != null) {
                 var v: UIView? = map
                 while (v != null && v !is UIWindow) {
                     v.gestureRecognizers?.forEach { gr ->
@@ -59,6 +59,7 @@ actual fun FestivalMapView(
                 }
             }
 
+            // Only sync annotations when the list reference actually changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
                 annotations.forEach { map.removeAnnotation(it) }
