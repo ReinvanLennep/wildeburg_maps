@@ -3,7 +3,6 @@ package com.wildeburg.maps.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.UIKitInteractionMode
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
@@ -25,9 +24,9 @@ actual fun FestivalMapView(
     location: LocationData?,
     modifier: Modifier
 ) {
-    val annotations      = remember { mutableListOf<MKPointAnnotation>() }
-    val lastPoisSlot     = remember { arrayOfNulls<List<POI>>(1) }
-    val gestureFixDone   = remember { booleanArrayOf(false) }
+    val annotations    = remember { mutableListOf<MKPointAnnotation>() }
+    val lastPoisSlot   = remember { arrayOfNulls<List<POI>>(1) }
+    val gestureFixDone = remember { booleanArrayOf(false) }
 
     UIKitView(
         factory = {
@@ -41,24 +40,28 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // One-time: walk up to the Compose root and tell every ancestor gesture
-            // recognizer not to delay or cancel touches. Without this, Compose holds
-            // the touch for ~300 ms waiting to claim it, so the map feels sluggish.
-            if (!gestureFixDone[0]) {
+            // Wait until the view is attached to a UIWindow before walking the
+            // gesture-recognizer chain. The first update() can fire before the
+            // view is in the window hierarchy, in which case the walk is a no-op
+            // and we must retry on the next update call.
+            if (!gestureFixDone[0] && map.window != null) {
                 gestureFixDone[0] = true
-                var v: UIView? = map.superview
+                // Walk every ancestor (including the map itself) and disable the
+                // Compose root's delaysTouchesBegan / cancelsTouchesInView so the
+                // map responds to pan/pinch immediately instead of after ~300 ms.
+                var v: UIView? = map
                 while (v != null) {
                     v.gestureRecognizers?.forEach { gr ->
                         (gr as? UIGestureRecognizer)?.apply {
                             cancelsTouchesInView = false
-                            delaysTouchesBegan  = false
+                            delaysTouchesBegan   = false
                         }
                     }
                     v = v.superview
                 }
             }
 
-            // Guard: only sync annotations when the list reference changes.
+            // Only sync annotations when the list reference actually changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
                 annotations.forEach { map.removeAnnotation(it) }
@@ -73,7 +76,6 @@ actual fun FestivalMapView(
                 }
             }
         },
-        modifier = modifier,
-        interactionMode = UIKitInteractionMode.NonCooperative
+        modifier = modifier
     )
 }
