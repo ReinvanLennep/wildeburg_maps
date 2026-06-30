@@ -16,6 +16,7 @@ import platform.MapKit.MKMapView
 import platform.MapKit.MKPointAnnotation
 import platform.UIKit.UIGestureRecognizer
 import platform.UIKit.UIView
+import platform.UIKit.UIWindow
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -40,17 +41,14 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // Wait until the view is attached to a UIWindow before walking the
-            // gesture-recognizer chain. The first update() can fire before the
-            // view is in the window hierarchy, in which case the walk is a no-op
-            // and we must retry on the next update call.
+            // Wait for the view to be in a UIWindow before patching recognizers.
+            // Stop the walk AT the UIWindow — modifying UIWindow's system gate
+            // gesture recognizers (home swipe, back gesture) is forbidden by iOS
+            // and produces the "undesired side effects" warning.
             if (!gestureFixDone[0] && map.window != null) {
                 gestureFixDone[0] = true
-                // Walk every ancestor (including the map itself) and disable the
-                // Compose root's delaysTouchesBegan / cancelsTouchesInView so the
-                // map responds to pan/pinch immediately instead of after ~300 ms.
                 var v: UIView? = map
-                while (v != null) {
+                while (v != null && v !is UIWindow) {
                     v.gestureRecognizers?.forEach { gr ->
                         (gr as? UIGestureRecognizer)?.apply {
                             cancelsTouchesInView = false
@@ -61,7 +59,6 @@ actual fun FestivalMapView(
                 }
             }
 
-            // Only sync annotations when the list reference actually changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
                 annotations.forEach { map.removeAnnotation(it) }
