@@ -15,6 +15,8 @@ import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKMapView
 import platform.MapKit.MKPointAnnotation
+import platform.UIKit.UIGestureRecognizer
+import platform.UIKit.UIView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -23,10 +25,9 @@ actual fun FestivalMapView(
     location: LocationData?,
     modifier: Modifier
 ) {
-    val annotations  = remember { mutableListOf<MKPointAnnotation>() }
-    // Holds the last list reference we rendered — using an array so we can
-    // mutate the slot without triggering recomposition (unlike mutableStateOf).
-    val lastPoisSlot = remember { arrayOfNulls<List<POI>>(1) }
+    val annotations      = remember { mutableListOf<MKPointAnnotation>() }
+    val lastPoisSlot     = remember { arrayOfNulls<List<POI>>(1) }
+    val gestureFixDone   = remember { booleanArrayOf(false) }
 
     UIKitView(
         factory = {
@@ -40,9 +41,24 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // Guard: skip annotation sync unless the list reference changed.
-            // Prevents ~1 Hz annotation teardown during GPS recompositions,
-            // which was interrupting pan/zoom gesture recognizers.
+            // One-time: walk up to the Compose root and tell every ancestor gesture
+            // recognizer not to delay or cancel touches. Without this, Compose holds
+            // the touch for ~300 ms waiting to claim it, so the map feels sluggish.
+            if (!gestureFixDone[0]) {
+                gestureFixDone[0] = true
+                var v: UIView? = map.superview
+                while (v != null) {
+                    v.gestureRecognizers?.forEach { gr ->
+                        (gr as? UIGestureRecognizer)?.apply {
+                            cancelsTouchesInView = false
+                            delaysTouchesBegan  = false
+                        }
+                    }
+                    v = v.superview
+                }
+            }
+
+            // Guard: only sync annotations when the list reference changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
                 annotations.forEach { map.removeAnnotation(it) }
