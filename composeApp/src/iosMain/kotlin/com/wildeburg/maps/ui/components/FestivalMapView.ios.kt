@@ -3,6 +3,7 @@ package com.wildeburg.maps.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitInteractionMode
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
@@ -22,10 +23,10 @@ actual fun FestivalMapView(
     location: LocationData?,
     modifier: Modifier
 ) {
-    val annotations    = remember { mutableListOf<MKPointAnnotation>() }
+    val annotations  = remember { mutableListOf<MKPointAnnotation>() }
     // Holds the last list reference we rendered — using an array so we can
     // mutate the slot without triggering recomposition (unlike mutableStateOf).
-    val lastPoisSlot   = remember { arrayOfNulls<List<POI>>(1) }
+    val lastPoisSlot = remember { arrayOfNulls<List<POI>>(1) }
 
     UIKitView(
         factory = {
@@ -40,9 +41,7 @@ actual fun FestivalMapView(
         },
         update = { map ->
             // Guard: skip annotation sync unless the list reference changed.
-            // Uses === (identity) because pois is always either the global POIS
-            // object or Kotlin's emptyList() singleton — both stable references.
-            // This prevents ~1 Hz annotation teardown during GPS recompositions,
+            // Prevents ~1 Hz annotation teardown during GPS recompositions,
             // which was interrupting pan/zoom gesture recognizers.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
@@ -58,6 +57,7 @@ actual fun FestivalMapView(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        interactionMode = UIKitInteractionMode.NonCooperative
     )
 }
