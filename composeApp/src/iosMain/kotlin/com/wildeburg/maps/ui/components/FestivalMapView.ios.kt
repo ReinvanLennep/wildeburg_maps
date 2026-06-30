@@ -3,7 +3,6 @@ package com.wildeburg.maps.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.UIKitInteractionMode
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
@@ -32,9 +31,6 @@ actual fun FestivalMapView(
         factory = {
             MKMapView().apply {
                 showsUserLocation = true
-                isScrollEnabled   = true
-                isZoomEnabled     = true
-                isRotateEnabled   = true
                 val center = CLLocationCoordinate2DMake(FESTIVAL_LAT, FESTIVAL_LON)
                 setRegion(
                     MKCoordinateRegionMakeWithDistance(center, 1200.0, 1200.0),
@@ -62,7 +58,6 @@ actual fun FestivalMapView(
                 }
             }
         },
-        modifier = modifier,
-        interactionMode = UIKitInteractionMode.NonCooperative
+        modifier = modifier
     )
 }
