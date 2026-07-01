@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wildeburg.maps.data.FocusRequest
 import com.wildeburg.maps.ui.*
 
 private enum class Tab { MAP, LEGEND }
@@ -14,6 +15,8 @@ private enum class Tab { MAP, LEGEND }
 @Composable
 fun App() {
     var selectedTab by remember { mutableStateOf(Tab.MAP) }
+    var focusRequest by remember { mutableStateOf<FocusRequest?>(null) }
+    var focusNonce by remember { mutableStateOf(0) }
 
     MaterialTheme(
         colorScheme = darkColorScheme(
@@ -43,8 +46,12 @@ fun App() {
         ) { padding ->
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 when (selectedTab) {
-                    Tab.MAP    -> MapScreen()
-                    Tab.LEGEND -> LegendScreen()
+                    Tab.MAP    -> MapScreen(focusRequest = focusRequest)
+                    Tab.LEGEND -> LegendScreen(onPoiClick = { poi ->
+                        focusNonce++
+                        focusRequest = FocusRequest(poi, focusNonce)
+                        selectedTab = Tab.MAP
+                    })
                 }
             }
         }

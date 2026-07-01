@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.wildeburg.maps.data.FocusRequest
 import com.wildeburg.maps.data.LocationData
 import com.wildeburg.maps.data.POI
 
@@ -14,6 +15,7 @@ import com.wildeburg.maps.data.POI
 actual fun FestivalMapView(
     pois: List<POI>,
     location: LocationData?,
+    focusRequest: FocusRequest?,
     modifier: Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {

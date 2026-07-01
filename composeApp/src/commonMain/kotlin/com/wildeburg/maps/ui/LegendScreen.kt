@@ -1,6 +1,7 @@
 package com.wildeburg.maps.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -19,7 +20,7 @@ import com.wildeburg.maps.data.*
 private val BG = Color(0xFF111111)
 
 @Composable
-fun LegendScreen() {
+fun LegendScreen(onPoiClick: (POI) -> Unit = {}) {
     val grouped = POIS.groupBy { it.category }
     val order = POICategory.values().toList()
 
@@ -66,7 +67,10 @@ fun LegendScreen() {
                     Row(
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.padding(start = 4.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onPoiClick(poi) }
+                            .padding(start = 4.dp, top = 4.dp, bottom = 4.dp)
                     ) {
                         Box(
                             modifier = Modifier.size(8.dp).clip(CircleShape).background(color)
