@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class GpsCoords(val lat: Double, val lon: Double)
 
 enum class POICategory {
-    STAGE, AREA, SERVICE, CAMPING
+    STAGE, AREA, SERVICE, CAMPING, EASTER_EGG
 }
 
 data class POI(
