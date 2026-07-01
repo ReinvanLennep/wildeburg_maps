@@ -23,7 +23,9 @@ val POIS = listOf(
     POI("duin-pan", "Duin/Pan", POICategory.STAGE,
         GpsCoords(52.682970, 5.882118), "Dune & pan area"),
     POI("achter-tuin", "Achter Tuin", POICategory.STAGE,
-        GpsCoords(52.682208, 5.885464), "Back garden area"),
+        GpsCoords(52.682208, 5.885464), "Back line area"),
+    POI("eiland", "Eiland", POICategory.STAGE,
+        GpsCoords(52.683679, 5.883569)),
 
     // ── Areas ────────────────────────────────────────────────────────────────
     POI("de-spot", "De Spot", POICategory.AREA,
@@ -50,25 +52,42 @@ val POIS = listOf(
         GpsCoords(52.685800, 5.883023), "Camping zone 3.5"),
     POI("camping-4", "Camping 4", POICategory.CAMPING,
         GpsCoords(52.683310, 5.885849), "Camping zone 4"),
+
+    // ── Easter Eggs ──────────────────────────────────────────────────────────
+    POI("shrub-1", "Shrub 1", POICategory.EASTER_EGG,
+        GpsCoords(52.681756, 5.881749)),
+    POI("the-shell", "The Shell", POICategory.EASTER_EGG,
+        GpsCoords(52.681176, 5.880945)),
+    POI("the-lost-condom", "The Lost Condom", POICategory.EASTER_EGG,
+        GpsCoords(52.681418, 5.880753)),
+    POI("home-base", "Home Base", POICategory.EASTER_EGG,
+        GpsCoords(52.683410, 5.885377)),
+    POI("showers", "Showers", POICategory.EASTER_EGG,
+        GpsCoords(52.685214, 5.884922)),
+    POI("chinese-wraps", "Chinese Wraps", POICategory.EASTER_EGG,
+        GpsCoords(52.679532, 5.879131)),
 )
 
 fun poiColor(category: POICategory) = when (category) {
-    POICategory.STAGE   -> Color(0xFFFF6B35)
-    POICategory.AREA    -> Color(0xFFAB47BC)
-    POICategory.SERVICE -> Color(0xFF78909C)
-    POICategory.CAMPING -> Color(0xFF4CAF50)
+    POICategory.STAGE      -> Color(0xFFFF6B35)
+    POICategory.AREA       -> Color(0xFFAB47BC)
+    POICategory.SERVICE    -> Color(0xFF78909C)
+    POICategory.CAMPING    -> Color(0xFF4CAF50)
+    POICategory.EASTER_EGG -> Color(0xFFFFD54F)
 }
 
 fun poiEmoji(category: POICategory) = when (category) {
-    POICategory.STAGE   -> "🎵"
-    POICategory.AREA    -> "🎪"
-    POICategory.SERVICE -> "ℹ️"
-    POICategory.CAMPING -> "⛺"
+    POICategory.STAGE      -> "🎵"
+    POICategory.AREA       -> "🎪"
+    POICategory.SERVICE    -> "ℹ️"
+    POICategory.CAMPING    -> "⛺"
+    POICategory.EASTER_EGG -> "🥚"
 }
 
 fun categoryDisplayName(category: POICategory) = when (category) {
-    POICategory.STAGE   -> "Stages"
-    POICategory.AREA    -> "Areas"
-    POICategory.SERVICE -> "Services"
-    POICategory.CAMPING -> "Camping"
+    POICategory.STAGE      -> "Stages"
+    POICategory.AREA       -> "Areas"
+    POICategory.SERVICE    -> "Services"
+    POICategory.CAMPING    -> "Camping"
+    POICategory.EASTER_EGG -> "Easter Eggs"
 }
