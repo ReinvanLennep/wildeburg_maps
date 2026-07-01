@@ -2,7 +2,10 @@ package com.wildeburg.maps.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
@@ -14,11 +17,8 @@ import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKMapView
 import platform.MapKit.MKPointAnnotation
-import platform.UIKit.UIGestureRecognizer
-import platform.UIKit.UIView
-import platform.UIKit.UIWindow
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
 @Composable
 actual fun FestivalMapView(
     pois: List<POI>,
@@ -40,25 +40,6 @@ actual fun FestivalMapView(
             }
         },
         update = { map ->
-            // Re-apply on every update: Compose recreates its gesture recognizers
-            // on each recomposition (~1 Hz from GPS), so a one-shot fix only patches
-            // the original set and misses every replacement. Walking on each frame
-            // costs ~microseconds (5 views × 3 recognizers max).
-            // Stop before UIWindow — its system gate recognizers (home swipe, back
-            // gesture) are forbidden from modification by iOS.
-            if (map.window != null) {
-                var v: UIView? = map
-                while (v != null && v !is UIWindow) {
-                    v.gestureRecognizers?.forEach { gr ->
-                        (gr as? UIGestureRecognizer)?.apply {
-                            cancelsTouchesInView = false
-                            delaysTouchesBegan   = false
-                        }
-                    }
-                    v = v.superview
-                }
-            }
-
             // Only sync annotations when the list reference actually changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
@@ -74,6 +55,12 @@ actual fun FestivalMapView(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        // Compose's default "Cooperative" mode delays every touch (~150ms) while it
+        // decides whether Compose or the native view should own the gesture. NonCooperative
+        // hands touches straight to MKMapView so pan/pinch/rotate respond immediately.
+        properties = UIKitInteropProperties(
+            interactionMode = UIKitInteropInteractionMode.NonCooperative
+        )
     )
 }
