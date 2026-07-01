@@ -66,6 +66,12 @@ val POIS = listOf(
         GpsCoords(52.685214, 5.884922)),
     POI("chinese-wraps", "Chinese Wraps", POICategory.EASTER_EGG,
         GpsCoords(52.679532, 5.879131)),
+    POI("erwins-lighter", "Erwin's Lighter", POICategory.EASTER_EGG,
+        GpsCoords(52.681106, 5.882725)),
+    POI("parking-for-legends", "Parking for Legends", POICategory.EASTER_EGG,
+        GpsCoords(52.673824, 5.882195)),
+    POI("drugs-in-the-bread", "Drugs in the Bread", POICategory.EASTER_EGG,
+        GpsCoords(52.687407, 5.868129)),
 )
 
 fun poiColor(category: POICategory) = when (category) {
