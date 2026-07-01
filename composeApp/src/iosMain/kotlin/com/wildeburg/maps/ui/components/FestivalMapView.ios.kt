@@ -9,6 +9,7 @@ import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import com.wildeburg.maps.data.FESTIVAL_LAT
 import com.wildeburg.maps.data.FESTIVAL_LON
+import com.wildeburg.maps.data.FocusRequest
 import com.wildeburg.maps.data.LocationData
 import com.wildeburg.maps.data.POI
 import com.wildeburg.maps.data.poiEmoji
@@ -23,10 +24,13 @@ import platform.MapKit.MKPointAnnotation
 actual fun FestivalMapView(
     pois: List<POI>,
     location: LocationData?,
+    focusRequest: FocusRequest?,
     modifier: Modifier
 ) {
-    val annotations  = remember { mutableListOf<MKPointAnnotation>() }
-    val lastPoisSlot = remember { arrayOfNulls<List<POI>>(1) }
+    val annotationsById  = remember { mutableMapOf<String, MKPointAnnotation>() }
+    val lastPoisSlot      = remember { arrayOfNulls<List<POI>>(1) }
+    val lastFocusNonce    = remember { intArrayOf(-1) }
+    val pendingSelectId   = remember { arrayOfNulls<String>(1) }
 
     UIKitView(
         factory = {
@@ -43,15 +47,33 @@ actual fun FestivalMapView(
             // Only sync annotations when the list reference actually changes.
             if (pois !== lastPoisSlot[0]) {
                 lastPoisSlot[0] = pois
-                annotations.forEach { map.removeAnnotation(it) }
-                annotations.clear()
+                annotationsById.values.forEach { map.removeAnnotation(it) }
+                annotationsById.clear()
                 pois.forEach { poi ->
                     val ann = MKPointAnnotation()
                     ann.setCoordinate(CLLocationCoordinate2DMake(poi.gps.lat, poi.gps.lon))
                     ann.setTitle("${poiEmoji(poi.category)} ${poi.name}")
                     poi.description?.let { ann.setSubtitle(it) }
                     map.addAnnotation(ann)
-                    annotations += ann
+                    annotationsById[poi.id] = ann
+                }
+            }
+
+            // Fires once per distinct focus request (Legend tap), even for a
+            // repeat tap on the same POI, since the nonce always changes.
+            if (focusRequest != null && focusRequest.nonce != lastFocusNonce[0]) {
+                lastFocusNonce[0] = focusRequest.nonce
+                val center = CLLocationCoordinate2DMake(focusRequest.poi.gps.lat, focusRequest.poi.gps.lon)
+                map.setRegion(MKCoordinateRegionMakeWithDistance(center, 300.0, 300.0), animated = true)
+                pendingSelectId[0] = focusRequest.poi.id
+            }
+
+            // Retried every update until the annotation exists (it may not yet
+            // if POIs were toggled off when the focus request arrived).
+            pendingSelectId[0]?.let { id ->
+                annotationsById[id]?.let { ann ->
+                    map.selectAnnotation(ann, animated = true)
+                    pendingSelectId[0] = null
                 }
             }
         },

@@ -2,6 +2,7 @@ package com.wildeburg.maps.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.wildeburg.maps.data.FocusRequest
 import com.wildeburg.maps.data.LocationData
 import com.wildeburg.maps.data.POI
 
@@ -9,5 +10,6 @@ import com.wildeburg.maps.data.POI
 expect fun FestivalMapView(
     pois: List<POI>,
     location: LocationData?,
+    focusRequest: FocusRequest? = null,
     modifier: Modifier = Modifier
 )

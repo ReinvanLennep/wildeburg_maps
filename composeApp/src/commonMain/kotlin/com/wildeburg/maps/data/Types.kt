@@ -23,3 +23,6 @@ data class LocationData(
     val accuracy: Float,
     val heading: Float? = null
 )
+
+// nonce forces the map to re-focus even when the same POI is tapped twice in a row.
+data class FocusRequest(val poi: POI, val nonce: Int)

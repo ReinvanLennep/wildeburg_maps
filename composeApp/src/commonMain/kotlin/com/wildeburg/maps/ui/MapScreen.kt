@@ -19,13 +19,19 @@ import com.wildeburg.maps.ui.components.*
 private val CHIP = Color(0xCC141414)
 
 @Composable
-fun MapScreen() {
+fun MapScreen(focusRequest: FocusRequest? = null) {
     val locationProvider = remember { LocationProvider() }
     val compassProvider  = remember { CompassProvider() }
 
     var location by remember { mutableStateOf<LocationData?>(null) }
     var heading  by remember { mutableStateOf<Float?>(null) }
     var showPOIs by remember { mutableStateOf(true) }
+
+    // A Legend tap should always reveal the pin it's pointing at, even if the
+    // user had previously hidden POIs with the toggle FAB.
+    LaunchedEffect(focusRequest) {
+        if (focusRequest != null) showPOIs = true
+    }
 
     val nearest: Pair<POI, Int>? = remember(location) {
         if (location == null) return@remember null
@@ -47,9 +53,10 @@ fun MapScreen() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         FestivalMapView(
-            pois     = if (showPOIs) POIS else emptyList(),
-            location = location?.copy(heading = heading),
-            modifier = Modifier.fillMaxSize()
+            pois         = if (showPOIs) POIS else emptyList(),
+            location     = location?.copy(heading = heading),
+            focusRequest = focusRequest,
+            modifier     = Modifier.fillMaxSize()
         )
 
         // Top HUD
